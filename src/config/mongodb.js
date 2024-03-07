@@ -1,3 +1,5 @@
+//Connecting to backend
+
 import {MongoClient, ServerApiVersion} from 'mongodb'
 import { env } from './environment'
 
