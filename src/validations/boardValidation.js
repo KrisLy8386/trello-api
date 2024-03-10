@@ -1,6 +1,7 @@
 //validations for boards
 import * as Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
+import ApiError from '~/utils/ApiError'
 
 const createNew = async (req, res, next) => {
 
@@ -27,10 +28,12 @@ const createNew = async (req, res, next) => {
     //To go to board controller
     next()
   } catch (error) {
-    res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ 
-      //new error to return only string of error message when working with Joi
-      errors: new Error(error).message
-    })
+    //return middleware error handler
+    return next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
+    // res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+    //   //new error to return only string of error message when working with Joi
+    //   errors: new Error(error).message
+    // })
   }
 }
 
