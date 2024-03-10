@@ -2,6 +2,7 @@
 
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
+import { boardService } from '~/services/boardService'
 
 const createNew = async (req, res, next) => {
 
@@ -12,8 +13,11 @@ const createNew = async (req, res, next) => {
     // console.log('req.files: ', req.files)
     // console.log('req.cookies: ', req.cookies)
     // console.log('req.jwtDecoded: ', req.jwtDecoded)
-    throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR,'broke')
-    // res.status(StatusCodes.CREATED).json({ message: 'POST from board Controller: API creates new board.' })
+
+    //Go to Board Service
+    const createdBoard = await boardService.createNew(req.body)
+
+    res.status(StatusCodes.CREATED).json(createdBoard)
   } catch (error) {
     //this will direct the flow to error handler middleware defined in server.js
     next(error)
