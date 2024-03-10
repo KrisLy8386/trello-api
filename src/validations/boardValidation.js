@@ -24,11 +24,11 @@ const createNew = async (req, res, next) => {
     //validate data to get all the errors
     await correctCondition.validateAsync(req.body, { abortEarly: false })
 
-    //next()
-    res.status(StatusCodes.CREATED).json({ message: 'POST from board validion: API creates new board.' })
+    //To go to board controller
+    next()
   } catch (error) {
     res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ 
-      //new error to return only string of error message
+      //new error to return only string of error message when working with Joi
       errors: new Error(error).message
     })
   }
