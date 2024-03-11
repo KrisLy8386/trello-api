@@ -31,7 +31,7 @@ export const CLOSE_DB = async () => {
 }
 
 //To get the data from database, export the database instance. Must only used after successfully connecting to the database
-export const GET_DB = () =>{
+export const GET_DB = () => {
   if (!trelloDatabaseInstance) throw new Error('Must connect to Database first!!!')
   return trelloDatabaseInstance
 }
