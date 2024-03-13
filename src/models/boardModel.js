@@ -40,10 +40,18 @@ const findOneById = async (boardId) => {
   } catch (error) { throw new Error(error) }
 }
 
+const getDetails = async (boardId) => {
+  try {
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({ _id: new ObjectId(boardId) })
+    return result
+  } catch (error) { throw new Error(error) }
+}
+
 export const boardModel = {
   BOARD_COLLECTION_NAME,
   BOARD_COLLECTION_SCHEMA,
   createNew,
   findOneById,
-  validateBeforeCreate
+  validateBeforeCreate,
+  getDetails
 }

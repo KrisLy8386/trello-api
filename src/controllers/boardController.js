@@ -24,6 +24,23 @@ const createNew = async (req, res, next) => {
   }
 }
 
+const getDetails = async (req, res, next) => {
+
+  try {
+    // console.log('req.params: ', req.params)
+
+    //Go to Board Service
+    const boardID = req.params.id
+    const board = await boardService.getDetails(boardID)
+
+    res.status(StatusCodes.CREATED).json(board)
+  } catch (error) {
+    //this will direct the flow to error handler middleware defined in server.js
+    next(error)
+  }
+}
+
 export const boardController = {
-  createNew
+  createNew,
+  getDetails
 }
