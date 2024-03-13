@@ -33,7 +33,7 @@ const getDetails = async (req, res, next) => {
     const boardID = req.params.id
     const board = await boardService.getDetails(boardID)
 
-    res.status(StatusCodes.CREATED).json(board)
+    res.status(StatusCodes.OK).json(board)
   } catch (error) {
     //this will direct the flow to error handler middleware defined in server.js
     next(error)
