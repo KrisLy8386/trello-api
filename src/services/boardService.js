@@ -3,6 +3,7 @@ import { slugify } from '~/utils/formatters'
 import { boardModel } from '~/models/boardModel'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
+import { cloneDeep, reduce } from 'lodash'
 
 const createNew = async (reqBody) => {
   try {
@@ -29,8 +30,20 @@ const getDetails = async (boardID) => {
     if(!board) {
       throw new ApiError(StatusCodes.NOT_FOUND,'Board not found!')
     }
+
+    const resBoard = cloneDeep(board)
+
+    //make card to its right column
+    resBoard.columns.forEach(column => {
+      // column.cards = resBoard.cards.filter(card => card.columnId.toString() === column._id.toString())
+      column.cards = resBoard.cards.filter(card => card.columnId.equals(column._id))
+    })
+
+    //remove cards from the initial board record
+    delete resBoard.cards
+
     //return the result. Always return in service
-    return board
+    return resBoard
   } catch (error) {throw error}
 }
 
