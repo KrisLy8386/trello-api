@@ -68,7 +68,7 @@ const getDetails = async (boardId) => {
     ]).toArray()
     // eslint-disable-next-line no-trailing-spaces
 
-    return result[0] || {}
+    return result[0] || null
   } catch (error) { throw new Error(error) }
 }
 
