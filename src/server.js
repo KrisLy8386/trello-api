@@ -1,46 +1,57 @@
-/* eslint-disable no-console */
 import express from 'express'
 import cors from 'cors'
 import { corsOptions } from '~/config/cors'
-import {env} from '~/config/environment'
 import exitHook from 'async-exit-hook'
-import {CONNECT_DB, CLOSE_DB} from '~/config/mongodb'
-import {APIs_V1} from '~/routes/v1'
-import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
+import { CONNECT_DB, CLOSE_DB } from '~/config/mongodb'
+import { env } from '~/config/environment'
+import { APIs_V1 } from '~/routes/v1'
+import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 
-const START_SERVER = () =>{
+const START_SERVER = () => {
   const app = express()
 
-  //Fix CORS problem
+  // Xử lý CORS
   app.use(cors(corsOptions))
 
-  //To parse all the Json data
+  // Enable req.body json data
   app.use(express.json())
 
-  //Use API v1
+  // Use APIs V1
   app.use('/v1', APIs_V1)
 
-  //Error handle middleware
+  // Middleware xử lý lỗi tập trung
   app.use(errorHandlingMiddleware)
 
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
-    console.log(`3. Hello ${env.AUTHOR}, I am running at ${env.APP_HOST}:${env.APP_PORT}/`)
-  })
+  // Môi trường Production (cụ thể hiện tại là đang support Render.com)
+  if (env.BUILD_MODE === 'production') {
+    app.listen(process.env.PORT, () => {
+      console.log(`3. Production: Hi ${env.AUTHOR}, Back-end Server is running successfully at Port: ${process.env.PORT}`)
+    })
+  } else {
+    // Môi trường Local Dev
+    app.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
+      console.log(`3. Local DEV: Hi ${env.AUTHOR}, Back-end Server is running successfully at Host: ${env.LOCAL_DEV_APP_HOST} and Port: ${env.LOCAL_DEV_APP_PORT}`)
+    })
+  }
 
-  //Close MongoDB connection, cleanning up
+  // Thực hiện các tác vụ cleanup trước khi dừng server
+  // Đọc thêm ở đây: https://stackoverflow.com/q/14031763/8324172
   exitHook(() => {
-    console.log('4. Disconnecting..')
+    console.log('4. Server is shutting down...')
     CLOSE_DB()
-    console.log('5. Disconnected.')
+    console.log('5. Disconnected from MongoDB Cloud Atlas')
   })
 }
 
-//Invoked Immediately/ IIFE
+// Chỉ khi Kết nối tới Database thành công thì mới Start Server Back-end lên.
+// Immediately-invoked / Anonymous Async Functions (IIFE)
 (async () => {
   try {
-    console.log('1. Connecting to MongoDB Cloud Atlas!')
+    console.log('1. Connecting to MongoDB Cloud Atlas...')
     await CONNECT_DB()
     console.log('2. Connected to MongoDB Cloud Atlas!')
+
+    // Khởi động Server Back-end sau khi đã Connect Database thành công
     START_SERVER()
   } catch (error) {
     console.error(error)
@@ -48,9 +59,10 @@ const START_SERVER = () =>{
   }
 })()
 
-//Different way to invoke the database
+// // Chỉ khi Kết nối tới Database thành công thì mới Start Server Back-end lên.
+// console.log('1. Connecting to MongoDB Cloud Atlas...')
 // CONNECT_DB()
-//   .then(() => console.log('Connected to MongoDB Cloud Atlas!'))
+//   .then(() => console.log('2. Connected to MongoDB Cloud Atlas!'))
 //   .then(() => START_SERVER())
 //   .catch(error => {
 //     console.error(error)
